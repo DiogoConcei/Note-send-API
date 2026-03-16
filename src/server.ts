@@ -8,9 +8,9 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
-    // Sincroniza o banco de dados e atualiza colunas se necessário
-    await sequelize.sync({ alter: true });
-    console.log('Banco de dados conectado e sincronizado com sucesso!');
+    // RECRIAR O BANCO DO ZERO (Apaga dados e cria colunas novas corretamente)
+    await sequelize.sync({ force: true });
+    console.log('BANCO DE DADOS RESETADO E RECRIADO COM SUCESSO!');
 
     app.listen(PORT, () => {
       console.log(`Servidor rodando na porta ${PORT}`);
