@@ -11,31 +11,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import swaggerDocument from './config/swagger.json';
 import { config } from './config/config';
 
-import sequelize from './config/database';
-
 const app = express();
-
-// Cache para sincronização no Serverless
-let isDbSynced = false;
-
-const syncDbMiddleware = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (isDbSynced || req.path === '/health') {
-    return next();
-  }
-  
-  try {
-    await sequelize.authenticate();
-    await sequelize.sync();
-    isDbSynced = true;
-    console.log('Postgres conectado e sincronizado com sucesso!');
-    next();
-  } catch (error) {
-    console.error('Erro na conexão/sincronização do Postgres:', error);
-    // Não paramos a requisição se não for ambiente de produção para depuração,
-    // mas em produção, o erro 500 será pego pelo errorHandler com os headers de CORS
-    next(error);
-  }
-};
 
 // Rate Limiting - Essencial para Vercel Serverless
 const limiter = rateLimit({
@@ -73,9 +49,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use(morgan(config.nodeEnv === 'production' ? 'combined' : 'dev'));
-
-// Sincronização automática do Banco de Dados (Postgres)
-app.use(syncDbMiddleware);
 
 // Documentação
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
