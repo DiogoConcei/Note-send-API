@@ -1,0 +1,108 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Note Send API",
+    "version": "1.0.0",
+    "description": "API para gerenciamento de notas"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Servidor Local"
+    }
+  ],
+  "paths": {
+    "/notes": {
+      "get": {
+        "summary": "Retorna todas as notas",
+        "responses": {
+          "200": {
+            "description": "Lista de notas"
+          }
+        }
+      },
+      "post": {
+        "summary": "Cria uma nova nota",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nota criada"
+          }
+        }
+      }
+    },
+    "/notes/{id}": {
+      "get": {
+        "summary": "Retorna uma nota pelo ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Nota encontrada" },
+          "404": { "description": "Nota não encontrada" }
+        }
+      },
+      "put": {
+        "summary": "Atualiza uma nota",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Nota atualizada" },
+          "404": { "description": "Nota não encontrada" }
+        }
+      },
+      "delete": {
+        "summary": "Remove uma nota",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Nota removida" },
+          "404": { "description": "Nota não encontrada" }
+        }
+      }
+    }
+  }
+}
