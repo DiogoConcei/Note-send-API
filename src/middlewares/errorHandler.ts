@@ -10,10 +10,13 @@ export const errorHandler = (
 ) => {
   const isDev = process.env.NODE_ENV === 'development';
   
-  if (isDev) {
-    logger.error(`${err.message} - ${req.method} ${req.url} - ${req.ip} - Stack: ${err.stack}`);
-  } else {
-    logger.error(`${err.message} - ${req.method} ${req.url} - ${req.ip}`);
+  // Log detalhado para o console do Vercel sempre aparecer, independente de ser Dev ou Prod
+  logger.error(`[ERRO API] ${req.method} ${req.url}: ${err.message}`);
+  if (err.parent) {
+    logger.error(`[DB ERROR DETAIL]: ${err.parent.message}`);
+  }
+  if (err.stack && isDev) {
+    logger.error(err.stack);
   }
 
   if (err instanceof z.ZodError) {

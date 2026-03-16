@@ -23,20 +23,27 @@ const limiter = rateLimit({
 });
 
 // Middlewares de Segurança
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(limiter);
 
 // Configuração de CORS Restritivo
 const allowedOrigins = config.allowedOrigins;
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+    // Permite se não houver origin (ex: ferramentas de teste) 
+    // ou se o origin estiver na lista ou se o wildcard '*' estiver presente na config
+    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Bloqueado por política CORS'));
+      // Retornar 'false' em vez de Error para evitar 500. 
+      // O navegador bloqueará a requisição por falta de headers.
+      callback(null, false);
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
   credentials: true
 }));
 
