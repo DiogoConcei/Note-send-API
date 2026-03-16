@@ -63,8 +63,9 @@ class AuthService {
       }
 
       return this.generateToken(user);
-    } catch (error) {
-      const authError = new Error('Falha na autenticação com Google');
+    } catch (error: any) {
+      console.error('ERRO INTERNO GOOGLE AUTH:', error);
+      const authError = new Error(`Falha na autenticação com Google: ${error.message || 'Erro desconhecido'}`);
       (authError as any).status = 401;
       throw authError;
     }

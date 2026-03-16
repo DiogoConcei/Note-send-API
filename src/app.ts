@@ -13,6 +13,9 @@ import { config } from './config/config';
 
 const app = express();
 
+// Confiar no proxy do Vercel para o express-rate-limit funcionar corretamente
+app.set('trust proxy', 1);
+
 // Rate Limiting - Essencial para Vercel Serverless
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
