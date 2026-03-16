@@ -1,15 +1,20 @@
 import Note from '../models/Note';
+import Topic from '../models/Topic';
 import DOMPurify from 'isomorphic-dompurify';
 
 interface CreateNoteDTO {
   title: string;
   content: string;
   userId: number;
+  topicId?: number;
 }
 
 class NoteService {
   public async findAll(userId: number) {
-    return await Note.findAll({ where: { userId } });
+    return await Note.findAll({ 
+      where: { userId },
+      include: [{ model: Topic, as: 'topic' }]
+    });
   }
 
   public async findById(id: number, userId: number) {

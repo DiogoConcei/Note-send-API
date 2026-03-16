@@ -2,12 +2,14 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
 import User from './User';
+import Topic from './Topic';
 
 class Note extends Model {
   public id!: number;
   public title!: string;
   public content!: string;
-  public userId!: number; // Adicionado para integridade de dados
+  public userId!: number;
+  public topicId!: number | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -35,6 +37,14 @@ Note.init(
         key: 'id',
       },
     },
+    topicId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Topics',
+        key: 'id',
+      },
+    },
   },
   {
     sequelize,
@@ -42,8 +52,10 @@ Note.init(
   }
 );
 
-// Define o relacionamento (opcional se você não usar belongsTo depois, mas recomendado)
 Note.belongsTo(User, { foreignKey: 'userId', as: 'owner' });
 User.hasMany(Note, { foreignKey: 'userId', as: 'notes' });
+
+Note.belongsTo(Topic, { foreignKey: 'topicId', as: 'topic' });
+Topic.hasMany(Note, { foreignKey: 'topicId', as: 'notes' });
 
 export default Note;

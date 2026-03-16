@@ -6,6 +6,7 @@ import swaggerUi from 'swagger-ui-express';
 import rateLimit from 'express-rate-limit';
 import noteRoutes from './routes/noteRoutes';
 import authRoutes from './routes/authRoutes';
+import topicRoutes from './routes/topicRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import swaggerDocument from './config/swagger.json';
 import { config } from './config/config';
@@ -48,6 +49,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Rotas
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
+app.use('/api/topics', topicRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
