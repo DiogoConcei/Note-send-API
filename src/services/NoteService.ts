@@ -1,17 +1,19 @@
 import Note from '../models/Note';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface CreateNoteDTO {
   title: string;
   content: string;
+  userId: number;
 }
 
 class NoteService {
-  public async findAll() {
-    return await Note.findAll();
+  public async findAll(userId: number) {
+    return await Note.findAll({ where: { userId } });
   }
 
-  public async findById(id: number) {
-    const note = await Note.findByPk(id);
+  public async findById(id: number, userId: number) {
+    const note = await Note.findOne({ where: { id, userId } });
     if (!note) {
       const error = new Error('Nota não encontrada');
       (error as any).status = 404;
@@ -21,16 +23,27 @@ class NoteService {
   }
 
   public async create(data: CreateNoteDTO) {
-    return await Note.create(data as any);
+    // Sanitização contra XSS
+    const sanitizedContent = DOMPurify.sanitize(data.content);
+    return await Note.create({
+      ...data,
+      content: sanitizedContent
+    } as any);
   }
 
-  public async update(id: number, data: Partial<CreateNoteDTO>) {
-    const note = await this.findById(id);
-    return await note.update(data);
+  public async update(id: number, userId: number, data: Partial<CreateNoteDTO>) {
+    const note = await this.findById(id, userId);
+    
+    const updateData = { ...data };
+    if (updateData.content) {
+      updateData.content = DOMPurify.sanitize(updateData.content);
+    }
+
+    return await note.update(updateData);
   }
 
-  public async delete(id: number) {
-    const note = await this.findById(id);
+  public async delete(id: number, userId: number) {
+    const note = await this.findById(id, userId);
     await note.destroy();
   }
 }

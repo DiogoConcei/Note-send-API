@@ -1,17 +1,27 @@
 import app from '../src/app';
 import sequelize from '../src/config/database';
 
-// O Sequelize sincroniza automaticamente na primeira requisição se o DB estiver vazio.
-// Em ambiente serverless, é ideal que a conexão ocorra fora do handler principal.
-const connectDB = async () => {
+let isSynced = false;
+
+const syncDatabase = async () => {
+  if (isSynced) return;
+  
   try {
+    // Autentica e sincroniza apenas uma vez por ciclo de vida da função lambda
+    await sequelize.authenticate();
     await sequelize.sync();
-    console.log('Postgres do Supabase sincronizado com sucesso!');
+    isSynced = true;
+    console.log('Postgres conectado e sincronizado com sucesso!');
   } catch (error) {
-    console.error('Erro ao sincronizar Postgres:', error);
+    console.error('Erro na conexão/sincronização do Postgres:', error);
+    // Em produção, não queremos derrubar o processo, mas o erro será logado no Vercel Logs
   }
 };
 
-connectDB();
+// Middleware para garantir conexão antes de processar rotas
+app.use(async (req, res, next) => {
+  await syncDatabase();
+  next();
+});
 
 export default app;
