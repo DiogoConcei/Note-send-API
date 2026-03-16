@@ -1,6 +1,8 @@
+import express from 'express';
 import app from '../src/app';
 import sequelize from '../src/config/database';
 
+const vercelApp = express();
 let isSynced = false;
 
 const syncDatabase = async () => {
@@ -19,9 +21,12 @@ const syncDatabase = async () => {
 };
 
 // Middleware para garantir conexão antes de processar rotas
-app.use(async (req, res, next) => {
+vercelApp.use(async (req, res, next) => {
   await syncDatabase();
   next();
 });
 
-export default app;
+// Delega o processamento para o app principal
+vercelApp.use(app);
+
+export default vercelApp;
