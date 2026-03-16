@@ -1,9 +1,7 @@
 import { Sequelize } from 'sequelize';
-import dotenv from 'dotenv';
+import { config } from './config';
 
-dotenv.config();
-
-const sequelize = new Sequelize(process.env.DATABASE_URL!, {
+const sequelize = new Sequelize(config.databaseUrl, {
   dialect: 'postgres',
   dialectOptions: {
     ssl: {
@@ -12,7 +10,6 @@ const sequelize = new Sequelize(process.env.DATABASE_URL!, {
     },
   },
   logging: false,
-  // Otimização para Serverless: fecha conexões ociosas rapidamente
   pool: {
     max: 5,
     min: 0,

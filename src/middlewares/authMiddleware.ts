@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { config } from '../config/config';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_change_me_now';
+const JWT_SECRET = config.jwtSecret;
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;

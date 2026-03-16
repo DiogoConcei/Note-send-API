@@ -8,6 +8,7 @@ import noteRoutes from './routes/noteRoutes';
 import authRoutes from './routes/authRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import swaggerDocument from './config/swagger.json';
+import { config } from './config/config';
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(helmet());
 app.use(limiter);
 
 // Configuração de CORS Restritivo
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*'];
+const allowedOrigins = config.allowedOrigins;
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
@@ -39,7 +40,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(morgan(config.nodeEnv === 'production' ? 'combined' : 'dev'));
 
 // Documentação
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

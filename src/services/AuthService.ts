@@ -1,9 +1,10 @@
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
+import { config } from '../config/config';
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
+const client = new OAuth2Client(config.googleClientId);
+const JWT_SECRET = config.jwtSecret;
 
 class AuthService {
   public async register(data: any) {
@@ -37,7 +38,7 @@ class AuthService {
     try {
       const ticket = await client.verifyIdToken({
         idToken,
-        audience: process.env.GOOGLE_CLIENT_ID,
+        audience: config.googleClientId,
       });
 
       const payload = ticket.getPayload();
